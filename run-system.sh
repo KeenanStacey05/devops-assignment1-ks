@@ -14,4 +14,9 @@ docker run -d \
     -e "POSTGRES_PASSWORD=chinook_pass" \
     -e "POSTGRES_DB=chinook" \
     postgres
-    
+
+#  Wait for the database to be ready
+until docker exec chinook-db pg_isready -h localhost -U chinook_user; do
+    echo "Waiting for database to be ready..."
+    sleep 2
+done
