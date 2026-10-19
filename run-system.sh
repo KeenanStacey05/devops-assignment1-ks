@@ -20,3 +20,10 @@ until docker exec chinook-db pg_isready -h localhost -U chinook_user; do
     echo "Waiting for database to be ready..."
     sleep 2
 done
+
+# Build the seeder image 
+docker build \
+    --target seeder \
+    --label project=chinook-agent \
+    -t chinook-seeder-image \
+    .
