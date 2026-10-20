@@ -39,3 +39,19 @@ docker run \
     -e SQLITE_FILE=/app/Chinook.db \
     -e DATABASE_URL=postgres://chinook_user:chinook_pass@chinook-db:5432/chinook \
     chinook-seeder-image
+
+# Starting the MCP gateway
+docker run -d \
+    --name chinook-gateway \
+    --network chinook-net \
+    --label project=chinook-agent \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v "$(pwd)/mcp_config.yaml:/mcp_config.yaml" \
+    -v "$(pwd)/mcp_secret.env:/run/secrets/database-url" \
+    docker/mcp-gateway:latest \
+    --transport=sse \
+    --secrets=/run/secrets/database-url \
+    --allow-unauthenticated \
+    --servers=cockroachdb \
+    --tools=execute_query \
+    --config=/mcp_config.yaml 
