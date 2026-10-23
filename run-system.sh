@@ -4,6 +4,10 @@ set -e
 
 export MSYS_NO_PATHCONV=1
 
+log() {
+    echo "[run-system] $*"
+}
+
 #Create a docker network shared between the containers
 docker network create --label project=chinook-agent chinook-net
 
@@ -55,3 +59,19 @@ docker run -d \
     --servers=cockroachdb \
     --tools=execute_query \
     --config=/mcp_config.yaml 
+
+ # Wait for the gateway to be ready
+WAIT_TIMEOUT="${WAIT_TIMEOUT:-60}"
+log "Waiting up to $WAIT_TIMEOUT seconds for the gateway (chinook-gateway:8811)..."
+
+elapsed=0
+until docker logs chinook-gateway 2>&1 | grep -q "Start sse server on port 8811"; do
+    elapsed=$((elapsed + 1))
+    if [ $elapsed -ge $WAIT_TIMEOUT ]; then
+        log "MCP gateway did not start within $WAIT_TIMEOUT seconds"
+        docker logs chinook-gateway
+        exit 1
+    fi
+    sleep 1
+done
+log "MCP gateway is ready"
