@@ -75,3 +75,10 @@ until docker logs chinook-gateway 2>&1 | grep -q "Start sse server on port 8811"
     sleep 1
 done
 log "MCP gateway is ready"
+
+# Build the agent image
+docker build \
+    --target agent \
+    -t chinook-agent-image \
+    .
+    
