@@ -82,3 +82,15 @@ docker build \
     -t chinook-agent-image \
     .
     
+# Start the agent on the network
+docker run --rm \
+    --name chinook-agent \
+    --network chinook-net \
+    -v "$(pwd)/secret.ollama-api-key:/run/secrets/openai-api-key" \
+    -e MCP_SERVER_URL=http://chinook-gateway:8811/sse \
+    -e DATABASE_DIALECT=PostgreSQL \
+    -e QUESTION="What are the top 3 albums by sales?" \
+    -e OPENAI_API_BASE_URL=https://ollama.com/v1 \
+    -e OPENAI_MODEL_NAME=gpt-oss:20b \
+    chinook-agent-image
+    
