@@ -15,7 +15,6 @@ docker network create --label project=chinook-agent chinook-net
 docker run -d \
     --name chinook-db \
     --network chinook-net \
-    --label project=chinook-agent \
     -e "POSTGRES_USER=chinook_user" \
     -e "POSTGRES_PASSWORD=chinook_pass" \
     -e "POSTGRES_DB=chinook" \
@@ -30,7 +29,6 @@ done
 # Build the seeder image 
 docker build \
     --target seeder \
-    --label project=chinook-agent \
     -t chinook-seeder-image \
     .
 
@@ -38,7 +36,6 @@ docker build \
 docker run \
     --name chinook-seeder \
     --network chinook-net \
-    --label project=chinook-agent \
     -v "$(pwd)/Chinook.db:/app/Chinook.db" \
     -e SQLITE_FILE=/app/Chinook.db \
     -e DATABASE_URL=postgres://chinook_user:chinook_pass@chinook-db:5432/chinook \
@@ -48,7 +45,6 @@ docker run \
 docker run -d \
     --name chinook-gateway \
     --network chinook-net \
-    --label project=chinook-agent \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$(pwd)/mcp_config.yaml:/mcp_config.yaml" \
     -v "$(pwd)/mcp_secret.env:/run/secrets/database-url" \
